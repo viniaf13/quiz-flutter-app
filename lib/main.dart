@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:quizzler_app/quiz_brain.dart';
+import 'question.dart';
+
+List<Question> quizBank = QuizBrain().quizBank;
 
 void main() => runApp(Quizzler());
 
@@ -25,6 +29,9 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+  int qIndex = 0;
+  List<Icon> scoreKeeper = [];
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -37,7 +44,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                'This is where the question text will go.',
+                quizBank[qIndex].text,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -61,6 +68,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
+                setUserScore(true);
                 //The user picked true.
               },
             ),
@@ -79,14 +87,35 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
+                setUserScore(false);
                 //The user picked false.
               },
             ),
           ),
         ),
-        //TODO: Add a Row here as your score keeper
+        Row(
+          children: scoreKeeper,
+        )
       ],
     );
+  }
+
+  void setUserScore(bool correctAnswer) {
+    Icon answerIcon = checkUserAnswer(correctAnswer);
+    setState(() {
+      scoreKeeper.add(answerIcon);
+      qIndex++;
+    });
+  }
+
+  Icon checkUserAnswer(bool userAnswer) {
+    Icon checkIcon = Icon(Icons.check, color: Colors.green);
+    Icon closeIcon = Icon(Icons.close, color: Colors.red);
+    if (quizBank[qIndex].answer == userAnswer) {
+      return checkIcon;
+    } else {
+      return closeIcon;
+    }
   }
 }
 
