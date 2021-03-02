@@ -28,7 +28,8 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
-  List<Icon> scoreKeeper = [];
+  List<Icon> scoreIcons = [];
+  int scorePoints = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +67,9 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                setUserScore(true);
+                setState(() {
+                  quizBrain.setUserScore(true, context);
+                });
                 //The user picked true.
               },
             ),
@@ -85,40 +88,18 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                setUserScore(false);
+                setState(() {
+                  quizBrain.setUserScore(false, context);
+                });
                 //The user picked false.
               },
             ),
           ),
         ),
         Row(
-          children: scoreKeeper,
+          children: quizBrain.getScoreIcons(),
         )
       ],
     );
   }
-
-  void setUserScore(bool correctAnswer) {
-    Icon answerIcon = checkUserAnswer(correctAnswer);
-    setState(() {
-      scoreKeeper.add(answerIcon);
-    });
-    quizBrain.nextQuestion();
-  }
-
-  Icon checkUserAnswer(bool userAnswer) {
-    Icon checkIcon = Icon(Icons.check, color: Colors.green);
-    Icon closeIcon = Icon(Icons.close, color: Colors.red);
-    if (quizBrain.getCorrectAnswer() == userAnswer) {
-      return checkIcon;
-    } else {
-      return closeIcon;
-    }
-  }
 }
-
-/*
-question1: 'You can lead a cow down stairs but not up stairs.', false,
-question2: 'Approximately one quarter of human bones are in the feet.', true,
-question3: 'A slug\'s blood is green.', true,
-*/

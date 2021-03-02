@@ -1,6 +1,12 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
 import 'question.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class QuizBrain {
+  int _scorePoints = 0;
+  List<Icon> _scoreIcons = [];
   int _questionNumber = 0;
   List<Question> _questionBank = [
     Question('Some cats are actually allergic to humans', true),
@@ -30,9 +36,28 @@ class QuizBrain {
         true),
   ];
 
-  void nextQuestion() {
+  void _nextQuestion(BuildContext context, int scorePoints) {
     if (_questionNumber < _questionBank.length - 1) {
       _questionNumber++;
+    } else {
+      Alert(
+          title: "The quiz reached the end",
+          desc: "You did $scorePoints points.",
+          context: context,
+          buttons: [
+            DialogButton(
+              child: Text(
+                "Restart Quiz",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              onPressed: () => Navigator.pop(context),
+              color: Color.fromRGBO(0, 179, 134, 1.0),
+              radius: BorderRadius.circular(0.0),
+            )
+          ]).show();
+      _questionNumber = 0;
+      _scoreIcons = [];
+      _scorePoints = 0;
     }
   }
 
@@ -42,5 +67,26 @@ class QuizBrain {
 
   String getQuestionText() {
     return _questionBank[_questionNumber].text;
+  }
+
+  List<Icon> getScoreIcons() {
+    return _scoreIcons;
+  }
+
+  void setUserScore(bool correctAnswer, BuildContext context) {
+    Icon answerIcon = _checkUserAnswer(correctAnswer);
+    _scoreIcons.add(answerIcon);
+    _nextQuestion(context, _scorePoints);
+  }
+
+  Icon _checkUserAnswer(bool userAnswer) {
+    Icon checkIcon = Icon(Icons.check, color: Colors.green);
+    Icon closeIcon = Icon(Icons.close, color: Colors.red);
+    if (getCorrectAnswer() == userAnswer) {
+      _scorePoints++;
+      return checkIcon;
+    } else {
+      return closeIcon;
+    }
   }
 }
